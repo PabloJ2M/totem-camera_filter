@@ -152,32 +152,55 @@ public class GraduationOverlayController : MonoBehaviour
 
             w = mask.Width();
             h = mask.Height();
-            int step = mask.Step(); // bytes por fila (puede incluir padding)
-            int floatsPerRow = step / sizeof(float);
-
+            int step = mask.Step(); 
+            
             using var pixelLock = new Mediapipe.PixelWriteLock(mask);
             var ptr = pixelLock.Pixels();
 
-            // Leer toda la memoria incluyendo el padding de fila
-            var raw = new float[floatsPerRow * h];
-            System.Runtime.InteropServices.Marshal.Copy(ptr, raw, 0, raw.Length);
+            // Detectar el formato real analizando cuántos bytes ocupa cada píxel
+            int bytesPerPixel = step / w;
+            int totalPixels = w * h;
+            data = new float[totalPixels];
 
-            // Si no hay padding (step == w * 4) copiamos directo
-            if (floatsPerRow == w)
+            if (bytesPerPixel >= 4)
             {
-                data = raw;
+                // CASO A: MediaPipe está enviando Floats (VEC32F1) o canales de 4 bytes
+                // Comprobamos si realmente son floats nativos
+                int floatsPerRow = step / sizeof(float);
+                var rawFloats = new float[floatsPerRow * h];
+                System.Runtime.InteropServices.Marshal.Copy(ptr, rawFloats, 0, rawFloats.Length);
+
+                // Copiar eliminando el padding de fila si existiera
+                for (int row = 0; row < h; row++)
+                {
+                    for (int col = 0; col < w; col++)
+                    {
+                        float val = rawFloats[row * floatsPerRow + col];
+                        // Si por algún motivo vienen bytes camuflados en un entero de 32 bits, 
+                        // o el float es mayor a 1.0, lo normalizamos
+                        data[row * w + col] = val > 1.0f ? val / 255f : val;
+                    }
+                }
             }
             else
             {
-                // Compactar: eliminar el padding de cada fila
-                data = new float[w * h];
+                // CASO B: MediaPipe está enviando canales de 1 byte (GRAY8 / Máscara de baja resolución)
+                var rawBytes = new byte[step * h];
+                System.Runtime.InteropServices.Marshal.Copy(ptr, rawBytes, 0, rawBytes.Length);
+
                 for (int row = 0; row < h; row++)
-                    System.Array.Copy(raw, row * floatsPerRow, data, row * w, w);
+                {
+                    for (int col = 0; col < w; col++)
+                    {
+                        // Convertimos el byte (0-255) a un float normalizado (0.0 - 1.0) para el shader
+                        data[row * w + col] = rawBytes[row * step + col] / 255f;
+                    }
+                }
             }
         }
         catch (System.Exception e)
         {
-            Debug.LogWarning($"[GraduationOverlayController] ReadMaskBytes: {e.Message}");
+            Debug.LogWarning($"[GraduationOverlayController] ReadMaskBytes Corregido Falló: {e.Message}");
             data = null;
         }
     }

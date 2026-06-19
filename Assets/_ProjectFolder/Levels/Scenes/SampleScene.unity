@@ -543,7 +543,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 958687559}
-  - component: {fileID: 958687560}
   m_Layer: 5
   m_Name: elements
   m_TagString: Untagged
@@ -572,27 +571,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -1012.5, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &958687560
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 958687558}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2261845a0af279694a7152b3f606c065, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AccessoryFollower
-  bodyTracker: {fileID: 0}
-  accessoryRect: {fileID: 369705776}
-  referenceRect: {fileID: 1240886871}
-  anchorLeft: 1
-  anchorRight: 2
-  verticalOffset: 0.9
-  scaleMultiplier: 2.4
-  minConfidence: 0.4
-  flipHorizontal: 1
 --- !u!1 &1240886870
 GameObject:
   m_ObjectHideFlags: 0
@@ -967,6 +945,53 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1653735112
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1653735113}
+  - component: {fileID: 1653735114}
+  m_Layer: 0
+  m_Name: segmentation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1653735113
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1653735112}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2126556588}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1653735114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1653735112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac9d4769b39836a2d836067333ca5821, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MediaPipeBodySegmenter
+  cameraProvider: {fileID: 2126556591}
+  maskResolution: {x: 256, y: 256}
+  _preview: {fileID: 1240886872}
 --- !u!1 &2126556586
 GameObject:
   m_ObjectHideFlags: 0
@@ -976,8 +1001,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2126556588}
-  - component: {fileID: 2126556590}
-  - component: {fileID: 2126556589}
+  - component: {fileID: 2126556591}
   m_Layer: 0
   m_Name: manager
   m_TagString: Untagged
@@ -997,10 +1021,11 @@ Transform:
   m_LocalPosition: {x: -0, y: -0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1653735113}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2126556589
+--- !u!114 &2126556591
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1009,40 +1034,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2126556586}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 280b63b0cfe908ec7842a2a8fda1e7d1, type: 3}
+  m_Script: {fileID: 11500000, guid: a7c9e945ea4651acf9285f38796cedcf, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Mediapipe.Unity.Sample.PoseLandmarkDetection.GraduationPoseLandmarkerRunner
-  _bootstrapPrefab: {fileID: 968918444066301895, guid: 1146a9de09159a948b683e94fb3d3c95, type: 3}
-  screen: {fileID: 1240886875}
-  runningMode: 0
-  _annotationController: {fileID: 713647049}
-  _overlayController: {fileID: 2126556590}
---- !u!114 &2126556590
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2126556586}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c1fb5ef44421ef219d29ff58279fb83, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GraduationOverlayController
-  compositeOutput: {fileID: 1240886872}
-  compositeMaterial: {fileID: 2100000, guid: 3894764ca042a7c48b558a8b34f4c901, type: 2}
-  backgroundTexture: {fileID: 0}
-  maskResolution: {x: 256, y: 256}
-  birreteRect: {fileID: 369705776}
-  birreteVerticalOffset: 0.9
-  birreteScaleMultiplier: 2.4
-  birreteMinVisibility: 0.5
-  togaRect: {fileID: 214066245}
-  togaVerticalOffset: 0.1
-  togaScaleMultiplier: 1.2
-  togaMinVisibility: 0.5
-  togaFollowRotation: 0
-  flipX: 0
+  m_EditorClassIdentifier: Assembly-CSharp::CameraTextureProvider
+  requestedResolution: {x: 1280, y: 720}
+  requestedFPS: 30
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

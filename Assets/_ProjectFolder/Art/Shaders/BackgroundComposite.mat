@@ -43,7 +43,7 @@ Material:
     - _FlipWebcam: 0
     - _InvertMask: 1
     - _MaskBlurRadius: 0
-    - _MaskFeather: 0.087
+    - _MaskFeather: 0
     m_Colors: []
   m_BuildTextureStacks: []
   m_AllowLocking: 1

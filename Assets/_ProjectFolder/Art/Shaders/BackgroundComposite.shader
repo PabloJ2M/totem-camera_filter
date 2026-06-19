@@ -49,18 +49,13 @@ Shader "Custom/BackgroundComposite"
                 return OUT;
             }
 
-            half4 frag(Varyings IN) : SV_Target
+            half4 frag(Varyings i) : SV_Target
             {
-                float2 uvWebcam = IN.uv;
-                if (_FlipWebcam > 0.5) uvWebcam.y = 1.0 - uvWebcam.y;
+                // Corrección opcional de orientación UV de la máscara
+                float2 uvMask = i.uv;
+                if (_FlipMask > 0) uvMask.y = 1.0 - uvMask.y;
 
-                float2 uvMask = IN.uv;
-                if (_FlipMask > 0.5) uvMask.y = 1.0 - uvMask.y;
-
-                half3 person = SAMPLE_TEXTURE2D(_WebcamTex, sampler_WebcamTex, uvWebcam).rgb;
-                half3 bg     = SAMPLE_TEXTURE2D(_BackgroundTex, sampler_BackgroundTex, IN.uv).rgb;
-
-                // Blur 9 muestras para suavizar el recorte a bloques
+                // Muestreo del Blur de 3x3
                 float2 o = float2(_MaskBlurRadius, _MaskBlurRadius);
                 half maskRaw = 0;
                 maskRaw += SAMPLE_TEXTURE2D(_MaskTex, sampler_MaskTex, uvMask + float2(-o.x,-o.y)).r;
@@ -74,14 +69,26 @@ Shader "Custom/BackgroundComposite"
                 maskRaw += SAMPLE_TEXTURE2D(_MaskTex, sampler_MaskTex, uvMask + float2( o.x, o.y)).r;
                 maskRaw *= (1.0 / 9.0);
 
-                // La máscara de MediaPipe PoseLandmarker viene en .r (RFloat)
-                // con 1.0 = persona, 0.0 = fondo — ya no necesitamos leer .a
-                // ni pasar por el decodificador de BodyPix.
-                half mask = smoothstep(0.5 - _MaskFeather, 0.5 + _MaskFeather, maskRaw);
-                if (_InvertMask > 0.5) mask = 1.0 - mask;
+                // --- NUEVA LÓGICA DE CORTE CORREGIDA ---
+                // Fijamos el centro en 0.4 (un umbral óptimo para MediaPipe) 
+                // Creamos un rango simétrico usando _MaskFeather para el suavizado de bordes.
+                half lowThreshold = clamp(0.4 - _MaskFeather, 0.01, 0.39);
+                half highThreshold = clamp(0.4 + _MaskFeather, 0.41, 0.99);
+                
+                half mask = smoothstep(lowThreshold, highThreshold, maskRaw);
 
-                half3 finalColor = lerp(bg, person, mask);
-                return half4(finalColor, 1.0);
+                // Opción de invertir máscara si está activada
+                if (_InvertMask > 0) mask = 1.0 - mask;
+
+                // Muestreo de la Webcam y Fondo
+                float2 uvWebcam = i.uv;
+                if (_FlipWebcam > 0) uvWebcam.y = 1.0 - uvWebcam.y;
+
+                half4 webcamColor = SAMPLE_TEXTURE2D(_WebcamTex, sampler_WebcamTex, uvWebcam);
+                half4 bgColor     = SAMPLE_TEXTURE2D(_BackgroundTex, sampler_BackgroundTex, i.uv);
+
+                // Composición final: interpolación lineal limpia
+                return lerp(bgColor, webcamColor, mask);
             }
             ENDHLSL
         }
