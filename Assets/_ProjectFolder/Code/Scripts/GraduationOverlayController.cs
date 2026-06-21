@@ -19,9 +19,12 @@ public class GraduationOverlayController : MonoBehaviour
     public float birreteScaleMultiplier = 2.4f;
     public float birreteMinVisibility   = 0.5f;
     [Tooltip("Voltear el birrete horizontalmente")]
-    public bool  birreteFlipX          = false;
+    public bool  birreteFlipX = false;
     [Tooltip("Voltear el birrete verticalmente (equivale a sumar 180° a la rotación)")]
-    public bool  birreteFlipY          = false;
+    public bool  birreteFlipY = false;
+
+	public void SetBirreteYOffset(float value) => birreteVerticalOffset = value;
+	public void BirreteFlipX(bool value) => birreteFlipX = value;
 
     [Header("Toga")]
     public RectTransform togaRect;
@@ -29,6 +32,8 @@ public class GraduationOverlayController : MonoBehaviour
     public float togaScaleMultiplier    = 1.2f;
     public float togaMinVisibility      = 0.5f;
     public bool  togaFollowRotation     = false;
+
+	public void SetTogaVerticalOffset(float value) => togaVerticalOffset = value;
 
     [Header("Ajuste de coordenadas")]
     public bool flipX = false;
