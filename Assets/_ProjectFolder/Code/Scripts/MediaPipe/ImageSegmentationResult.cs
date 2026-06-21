@@ -36,7 +36,7 @@ namespace Mediapipe.Unity
             {
                 _currentTarget = newTarget;
                 ReadCurrentMasks();
-                isStale = true; // Flag nativo del plugin para el ciclo Update
+                isStale = true;
             }
         }
         protected override void SyncNow()

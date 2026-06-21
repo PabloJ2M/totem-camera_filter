@@ -6,10 +6,8 @@ using UnityEngine.Rendering;
 namespace Mediapipe.Unity.Sample.PoseLandmarkDetection
 {
     /// <summary>
-    /// Variante de PoseLandmarkerRunner con segmentación activada y
-    /// sin dependencia de BodyPix/Sentis.
-    /// Habilita OutputSegmentationMasks y pasa el resultado a
-    /// GraduationOverlayController antes de destruir las máscaras.
+    /// Variante de PoseLandmarkerRunner enfocada solo en pose landmarks.
+    /// La segmentación la maneja SegmentationCompositor por separado.
     /// </summary>
     public class GraduationPoseLandmarkerRunner : VisionTaskApiRunner<PoseLandmarker>
     {
@@ -30,8 +28,8 @@ namespace Mediapipe.Unity.Sample.PoseLandmarkDetection
 
         protected override IEnumerator Run()
         {
-            // Activar la máscara de segmentación
-            config.OutputSegmentationMasks = true;
+            // Sin máscaras de segmentación — las maneja SegmentationCompositor
+            config.OutputSegmentationMasks = false;
 
             yield return AssetLoader.PrepareAssetAsync(config.ModelPath);
 
@@ -39,7 +37,7 @@ namespace Mediapipe.Unity.Sample.PoseLandmarkDetection
                 config.RunningMode == Tasks.Vision.Core.RunningMode.LIVE_STREAM
                     ? OnDetectionOutput : null);
 
-            taskApi = PoseLandmarker.CreateFromOptions(options, GpuManager.GpuResources);
+            taskApi      = PoseLandmarker.CreateFromOptions(options, GpuManager.GpuResources);
             _imageSource = ImageSourceProvider.ImageSource;
             var imageSource = _imageSource;
 
@@ -121,26 +119,21 @@ namespace Mediapipe.Unity.Sample.PoseLandmarkDetection
                         if (taskApi.TryDetect(image, imageProcessingOptions, ref result))
                         {
                             _annotationController.DrawNow(result);
-                            _overlayController?.SetSourceTexture(imageSource.GetCurrentTexture());
                             _overlayController?.UpdateFromResult(result);
                         }
                         else _annotationController.DrawNow(default);
-                        DisposeAllMasks(result);
                         break;
 
                     case Tasks.Vision.Core.RunningMode.VIDEO:
                         if (taskApi.TryDetectForVideo(image, GetCurrentTimestampMillisec(), imageProcessingOptions, ref result))
                         {
                             _annotationController.DrawNow(result);
-                            _overlayController?.SetSourceTexture(imageSource.GetCurrentTexture());
                             _overlayController?.UpdateFromResult(result);
                         }
                         else _annotationController.DrawNow(default);
-                        DisposeAllMasks(result);
                         break;
 
                     case Tasks.Vision.Core.RunningMode.LIVE_STREAM:
-                        // El resultado llega en OnDetectionOutput
                         taskApi.DetectAsync(image, GetCurrentTimestampMillisec(), imageProcessingOptions);
                         break;
                 }
@@ -149,20 +142,9 @@ namespace Mediapipe.Unity.Sample.PoseLandmarkDetection
 
         private void OnDetectionOutput(PoseLandmarkerResult result, Image image, long timestamp)
         {
-            // No llamamos _annotationController.DrawLater() aquí porque el
-            // annotation controller intenta instanciar GameObjects desde este
-            // hilo secundario cuando OutputSegmentationMasks = true → UnityException.
-            // GraduationOverlayController maneja todo visualmente de forma thread-safe.
-            _overlayController?.SetSourceTexture(_imageSource?.GetCurrentTexture());
+            // Sin máscaras → DrawLater ya no crashea, pero igual lo omitimos
+            // para no mezclar hilos con el annotation controller
             _overlayController?.UpdateFromResult(result);
-            DisposeAllMasks(result);
-        }
-
-        private void DisposeAllMasks(PoseLandmarkerResult result)
-        {
-            if (result.segmentationMasks == null) return;
-            foreach (var mask in result.segmentationMasks)
-                mask.Dispose();
         }
     }
 }

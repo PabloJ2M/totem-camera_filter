@@ -8,13 +8,13 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: BackgroundComposite
-  m_Shader: {fileID: 4800000, guid: 614f75988fe4915eb901acd1cb0ac1bb, type: 3}
+  m_Shader: {fileID: 4800000, guid: 8a25bb3576df3811c9b0ea276494b4d6, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords:
-  - _FLIPMASK_ON
-  - _INVERTMASK_ON
+  - _FLIPMASKX_ON
+  - _FLIPMASKY_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -26,7 +26,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BackgroundTex:
-        m_Texture: {fileID: 2800000, guid: c5378576278656af5bd180217debad1e, type: 3}
+        m_Texture: {fileID: 2800000, guid: 800cb34638d46e00eaf3972adabc4902, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MaskTex:
@@ -39,11 +39,17 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _FlipMask: 1
+    - _FlipMask: 0
+    - _FlipMaskX: 1
+    - _FlipMaskY: 1
     - _FlipWebcam: 0
-    - _InvertMask: 1
-    - _MaskBlurRadius: 0
+    - _FlipWebcamX: 0
+    - _FlipWebcamY: 0
+    - _InvertMask: 0
+    - _MaskBlurRadius: 0.02
+    - _MaskCutoff: 0.2
     - _MaskFeather: 0
+    - _MaskSmooth: 0.02
     m_Colors: []
   m_BuildTextureStacks: []
   m_AllowLocking: 1

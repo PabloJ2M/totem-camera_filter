@@ -68,7 +68,8 @@ namespace Mediapipe.Unity
             _maskTex2D.Apply();
             Graphics.Blit(_maskTex2D, _maskRT);
 
-            _debug.texture = MaskTexture;
+            if (_debug)
+                _debug.texture = MaskTexture;
         }
 
         private void OnDestroy()
