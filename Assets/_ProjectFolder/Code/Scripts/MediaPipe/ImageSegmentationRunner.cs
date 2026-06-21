@@ -23,6 +23,8 @@ namespace Mediapipe.Unity.Sample.ImageSegmentation
         protected override IEnumerator Run()
         {
             config.Model = ModelType.SelfieSegmenterSquare;
+            config.Delegate = Tasks.Core.BaseOptions.Delegate.CPU;
+            config.ImageReadMode = ImageReadMode.CPU;
 
             Debug.Log($"Delegate = {config.Delegate}");
             Debug.Log($"Image Read Mode = {config.ImageReadMode}");

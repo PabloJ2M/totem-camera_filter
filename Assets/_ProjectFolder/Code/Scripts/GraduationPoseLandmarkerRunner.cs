@@ -30,6 +30,8 @@ namespace Mediapipe.Unity.Sample.PoseLandmarkDetection
         {
             // Sin máscaras de segmentación — las maneja SegmentationCompositor
             config.OutputSegmentationMasks = false;
+            config.Delegate = Tasks.Core.BaseOptions.Delegate.CPU;
+            config.ImageReadMode = ImageReadMode.CPU;
 
             yield return AssetLoader.PrepareAssetAsync(config.ModelPath);
 
