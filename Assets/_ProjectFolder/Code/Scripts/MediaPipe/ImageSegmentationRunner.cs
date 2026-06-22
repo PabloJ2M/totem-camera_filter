@@ -26,12 +26,6 @@ namespace Mediapipe.Unity.Sample.ImageSegmentation
             config.Delegate = Tasks.Core.BaseOptions.Delegate.CPU;
             config.ImageReadMode = ImageReadMode.CPU;
 
-            Debug.Log($"Delegate = {config.Delegate}");
-            Debug.Log($"Image Read Mode = {config.ImageReadMode}");
-            Debug.Log($"Model = {config.ModelName}");
-            Debug.Log($"Running Mode = {config.RunningMode}");
-            Debug.Log($"Category Index = {config.CategoryIndex}");
-
             yield return AssetLoader.PrepareAssetAsync(config.ModelPath);
 
             var options = config.GetImageSegmenterOptions(config.RunningMode == Tasks.Vision.Core.RunningMode.LIVE_STREAM ? OnImageSegmentationOutput : null);

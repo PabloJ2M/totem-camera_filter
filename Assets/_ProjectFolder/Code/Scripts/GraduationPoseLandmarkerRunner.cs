@@ -5,17 +5,13 @@ using UnityEngine.Rendering;
 
 namespace Mediapipe.Unity.Sample.PoseLandmarkDetection
 {
-    /// <summary>
-    /// Variante de PoseLandmarkerRunner enfocada solo en pose landmarks.
-    /// La segmentación la maneja SegmentationCompositor por separado.
-    /// </summary>
     public class GraduationPoseLandmarkerRunner : VisionTaskApiRunner<PoseLandmarker>
     {
         [SerializeField] private PoseLandmarkerResultAnnotationController _annotationController;
         [SerializeField] private GraduationOverlayController _overlayController;
 
         private Experimental.TextureFramePool _textureFramePool;
-        private Mediapipe.Unity.ImageSource   _imageSource;
+        private ImageSource _imageSource;
 
         public readonly PoseLandmarkDetectionConfig config = new PoseLandmarkDetectionConfig();
 
@@ -28,7 +24,6 @@ namespace Mediapipe.Unity.Sample.PoseLandmarkDetection
 
         protected override IEnumerator Run()
         {
-            // Sin máscaras de segmentación — las maneja SegmentationCompositor
             config.OutputSegmentationMasks = false;
             config.Delegate = Tasks.Core.BaseOptions.Delegate.CPU;
             config.ImageReadMode = ImageReadMode.CPU;
