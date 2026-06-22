@@ -8,6 +8,7 @@ public class GraduationOverlayController : MonoBehaviour
 
     [SerializeField] private RectTransform birreteRect;
     public static float birreteVerticalOffset = -0.64f;
+    public static float birreteHorizontalOffset = 0f;
     public static float birreteScaleMultiplier = 2.86f;
     public static float birreteMinVisibility = 0f;
 
@@ -16,6 +17,7 @@ public class GraduationOverlayController : MonoBehaviour
 
 	public void BirreteFlipX(bool value) => birreteFlipX = value;
 	public void SetBirreteYOffset(float value) => birreteVerticalOffset = value;
+    public void SetBirreteXOffset(float value) => birreteHorizontalOffset = value;
     public void SetBirreteSize(float value) => birreteScaleMultiplier = value;
 
     [SerializeField] private RectTransform togaRect;
@@ -60,7 +62,6 @@ public class GraduationOverlayController : MonoBehaviour
             ApplyResult(result.Value);
     }
 
-    /// <summary>Seguro para llamar desde cualquier hilo.</summary>
     public void UpdateFromResult(PoseLandmarkerResult result)
     {
         lock (_lock) { _pendingResult = result; }
@@ -94,7 +95,11 @@ public class GraduationOverlayController : MonoBehaviour
 
         SetVisible(birreteRect, showBirrete);
         if (showBirrete && birreteRect != null)
-            PlaceOverlay(birreteRect, ToLocal(lEar.x, lEar.y, rect), ToLocal(rEar.x, rEar.y, rect), birreteVerticalOffset, birreteScaleMultiplier, birreteFlipX, birreteFlipY);
+            PlaceOverlay(birreteRect,
+                ToLocal(lEar.x, lEar.y, rect),
+                ToLocal(rEar.x, rEar.y, rect),
+                birreteVerticalOffset, birreteHorizontalOffset,
+                birreteScaleMultiplier, birreteFlipX, birreteFlipY);
 
         // --- Toga ---
         var lSh = landmarks[LEFT_SHOULDER];
@@ -108,15 +113,14 @@ public class GraduationOverlayController : MonoBehaviour
         {
             Vector2 lShoulder = ToLocal(lSh.x, lSh.y, rect);
             Vector2 rShoulder = ToLocal(rSh.x, rSh.y, rect);
-            Vector2 lHip      = ToLocal(lHp.x, lHp.y, rect);
-            Vector2 rHip      = ToLocal(rHp.x, rHp.y, rect);
+            Vector2 lHip = ToLocal(lHp.x, lHp.y, rect);
+            Vector2 rHip = ToLocal(rHp.x, rHp.y, rect);
 
-            float shoulderDist  = Vector2.Distance(lShoulder, rShoulder);
+            float shoulderDist = Vector2.Distance(lShoulder, rShoulder);
             float shoulderAngle = Mathf.Atan2(rShoulder.y - lShoulder.y, rShoulder.x - lShoulder.x) * Mathf.Rad2Deg;
 
             Vector2 topMid = (lShoulder + rShoulder) * 0.5f;
             Vector2 bottomMid = (lHip + rHip) * 0.5f;
-            Vector2 mid = (topMid + bottomMid) * 0.5f;
             Vector2 right2mid = (rShoulder - lShoulder).normalized;
 
             Vector2 anchor = Vector2.LerpUnclamped(topMid, bottomMid, togaVerticalOffset) + right2mid * shoulderDist * togaHorizontalOffset;
@@ -146,18 +150,20 @@ public class GraduationOverlayController : MonoBehaviour
         return new Vector2(x * rect.width, y * rect.height);
     }
 
-    void PlaceOverlay(RectTransform rt, Vector2 left, Vector2 right, float verticalOffset, float scaleMultiplier, bool flipX = false, bool flipY = false)
+    void PlaceOverlay(RectTransform rt, Vector2 left, Vector2 right,
+                      float verticalOffset, float horizontalOffset,
+                      float scaleMultiplier, bool flipX = false, bool flipY = false)
     {
         Vector2 mid = (left + right) * 0.5f;
-        float dist  = Vector2.Distance(left, right);
+        float dist = Vector2.Distance(left, right);
         float angle = Mathf.Atan2(right.y - left.y, right.x - left.x) * Mathf.Rad2Deg;
-        float rad   = angle * Mathf.Deg2Rad;
-        Vector2 up  = new Vector2(-Mathf.Sin(rad), Mathf.Cos(rad));
+        float rad = angle * Mathf.Deg2Rad;
+        Vector2 up = new Vector2(-Mathf.Sin(rad), Mathf.Cos(rad));
+        Vector2 side = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
 
-        rt.anchoredPosition = mid + up * dist * verticalOffset;
+        rt.anchoredPosition = mid + up * dist * verticalOffset + side * dist * horizontalOffset;
         rt.localRotation = Quaternion.Euler(0f, 0f, angle);
         rt.sizeDelta = Vector2.one * dist * scaleMultiplier;
-
         rt.localScale = new Vector3(flipX ? -1f : 1f, flipY ? -1f : 1f, 1f);
     }
 
