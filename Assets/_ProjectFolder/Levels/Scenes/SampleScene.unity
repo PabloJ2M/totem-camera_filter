@@ -11271,9 +11271,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03acf1abbd3d5da4d853381596956c52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SliderButton
-  _value: -0.64
-  _limits: {x: -1.3, y: 0}
-  _step: 0.1
+  _value: 0
+  _limits: {x: -0.5, y: 0.5}
+  _step: 0.05
   _addButton: {fileID: 1465100672}
   _substractbutton: {fileID: 2095770197}
   _onValueChanged:
