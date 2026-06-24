@@ -10,7 +10,7 @@ public class GraduationOverlayController : MonoBehaviour
     public static float birreteVerticalOffset = -0.64f;
     public static float birreteHorizontalOffset = 0f;
     public static float birreteScaleMultiplier = 2.86f;
-    public static float birreteMinVisibility = 0f;
+    public static float birreteMinVisibility = 0.05f;
 
     public static bool birreteFlipX = false;
     public static bool birreteFlipY = true;
@@ -26,7 +26,7 @@ public class GraduationOverlayController : MonoBehaviour
     public static float togaVerticalOffset = 1.05f;
     public static float togaHorizontalOffset = 0f;
     public static float togaScaleMultiplier = 4f;
-    public static float togaMinVisibility = 0;
+    public static float togaMinVisibility = 0.05f;
     public bool  togaFollowRotation = false;
 
     private bool _togaInitialized = false;
